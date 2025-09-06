@@ -1,0 +1,3 @@
+# Ignore sensitive Postman environment
+Trello.postman_environment.json
+*.postman_environment.json
