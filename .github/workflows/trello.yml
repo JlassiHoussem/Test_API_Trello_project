@@ -3,7 +3,7 @@ name: Run Postman Tests
 on:
   push:
     branches:
-      - main    
+      - main
   pull_request:
 
 jobs:
@@ -14,24 +14,32 @@ jobs:
       TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
 
     steps:
+      # 1️⃣ Checkout du code
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # 3️⃣ Installer Newman
       - name: Install Newman
         run: npm install -g newman
 
+      # 4️⃣ Exécuter la collection Postman avec injection des secrets
       - name: Run Postman Collection
         run: |
           newman run "Trello API.postman_collection.json" \
             -e "Trello.postman_environment.template.json" \
+            --env-var "key=$TRELLO_KEY" \
+            --env-var "token=$TRELLO_TOKEN" \
+            --env-var "base_url=https://api.trello.com" \
             --reporters cli,junit \
             --reporter-junit-export results.xml
 
+      # 5️⃣ Sauvegarder le rapport comme artifact
       - name: Upload test results
         uses: actions/upload-artifact@v4
         with:
