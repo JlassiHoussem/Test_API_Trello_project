@@ -1,0 +1,44 @@
+name: Run Postman Tests
+
+on:
+  push:
+    branches:
+      - main    
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+
+    steps:
+      # 1. Checkout du code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Installer Node.js 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3. Installer Newman
+      - name: Install Newman
+        run: npm install -g newman
+
+      # 4. Exécuter les tests
+      - name: Run Postman Collection
+        run: |
+          newman run "Trello API.postman_collection.json" \
+            -e "Trello.postman_environment.template.json" \
+            --reporters cli,junit \
+            --reporter-junit-export results.xml
+
+      # 5. Sauvegarder le rapport comme artifact
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: postman-test-results
+          path: results.xml
