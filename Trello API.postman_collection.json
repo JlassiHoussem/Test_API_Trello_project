@@ -4,7 +4,7 @@
 		"name": "Trello API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48154822",
-		"_collection_link": "https://jlassihoussmeddine-3175432.postman.co/workspace/hossem's-Workspace~176aedaa-fb45-48f5-8ecc-e1261034ac97/collection/48154822-08a6a00d-da3e-43b9-8913-8da00eaaed9d?action=share&source=collection_link&creator=48154822"
+		"_collection_link": "https://jlassihoussmeddine-3175432.postman.co/workspace/176aedaa-fb45-48f5-8ecc-e1261034ac97/collection/48154822-08a6a00d-da3e-43b9-8913-8da00eaaed9d?action=share&source=collection_link&creator=48154822"
 	},
 	"item": [
 		{
@@ -19,7 +19,23 @@
 							"});\r",
 							"\r",
 							"let jsonData = pm.response.json();\r",
-							"pm.environment.set(\"myboardId\", jsonData.id);"
+							"pm.environment.set(\"myboardId\", jsonData.id);\r",
+							"\r",
+							"  pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							" \"// Body checks\"\r",
+							"   pm.test(\"Board ID exists\", function () {\r",
+							"   pm.expect(jsonData.id).to.exist;\r",
+							"  });\r",
+							"\r",
+							"pm.test(\"Board name is correct\", function () {\r",
+							"pm.expect(jsonData.name).to.eql('bootcamp12');\r",
+							" });\r",
+							"  \r",
+							"  pm.environment.set(\"myboardId\", pm.response.json().id);\r",
+							"postman.setNextRequest(\"Get Board\");\r",
+							"             "
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -30,7 +46,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/1/boards/?key={{key}}&name=bootcamp8&token={{token}}&defaultLists=false",
+					"raw": "{{base_url}}/1/boards/?key={{key}}&name=bootcamp12&token={{token}}&defaultLists=false",
 					"host": [
 						"{{base_url}}"
 					],
@@ -46,7 +62,7 @@
 						},
 						{
 							"key": "name",
-							"value": "bootcamp8"
+							"value": "bootcamp12"
 						},
 						{
 							"key": "token",
@@ -63,6 +79,37 @@
 		},
 		{
 			"name": "Get Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Board ID matches\", function () {\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get('myboardId'));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Board name is correct\", function () {\r",
+							"    pm.expect(jsonData.name).to.eql('bootcamp12');\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"Update Board\");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -102,12 +149,30 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Response time is less than 30000ms\", function () {\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
 							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
 							"});\r",
 							"\r",
 							"let jsonData = pm.response.json();\r",
-							"pm.environment.set(\"myListId\", jsonData.id);"
+							"\r",
+							"pm.test(\"List ID exists\", function () {\r",
+							"    pm.expect(jsonData.id).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"List name is correct\", function () {\r",
+							"    pm.expect(jsonData.name).to.eql('myfirstlist4');\r",
+							"});\r",
+							"\r",
+							"// Save list ID to environment variable\r",
+							"pm.environment.set(\"myListId\", jsonData.id);\r",
+							"\r",
+							"// ➝ enchaîner sur Get Lists on board\r",
+							"postman.setNextRequest(\"Get Lists on board\");\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -126,6 +191,73 @@
 						}
 					}
 				},
+				"url": {
+					"raw": "{{base_url}}/1/boards/{{myboardId}}/lists?name=myfirstlist4&key={{key}}&token={{token}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{myboardId}}",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "myfirstlist4"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "",
+							"value": " ",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Lists on board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Lists array is not empty\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check created list exists\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let list = jsonData.find(l => l.id === pm.environment.get(\"myListId\"));\r",
+							"    pm.expect(list).to.not.be.undefined;\r",
+							"});\r",
+							"\r",
+							"// ➝ enchaîner sur Create Card\r",
+							"postman.setNextRequest(\"Creat Card\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
 				"url": {
 					"raw": "{{base_url}}/1/boards/{{myboardId}}/lists?name=myfirstlist&key={{key}}&token={{token}}",
 					"host": [
@@ -149,11 +281,6 @@
 						{
 							"key": "token",
 							"value": "{{token}}"
-						},
-						{
-							"key": "",
-							"value": " ",
-							"disabled": true
 						}
 					]
 				}
@@ -162,11 +289,52 @@
 		},
 		{
 			"name": "Creat Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Card ID exists\", function () {\r",
+							"    pm.expect(jsonData.id).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Card name is correct\", function () {\r",
+							"    pm.expect(jsonData.name).to.eql('mycard5');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Card linked to correct list\", function () {\r",
+							"    pm.expect(jsonData.idList).to.eql(pm.environment.get('myListId'));\r",
+							"});\r",
+							"\r",
+							"// Save Card ID to environment variable\r",
+							"pm.environment.set(\"myCardId\", jsonData.id);\r",
+							"\r",
+							"// enchaîner sur Get Card\r",
+							"postman.setNextRequest(\"Get Card\");\r",
+							"\r",
+							"// ➝ enchaîner sur Get Card\r",
+							"postman.setNextRequest(\"Get Card\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/1/cards?idList={{myListId}}&key={{key}}&token={{token}}&name=mycard1",
+					"raw": "{{base_url}}/1/cards?idList={{myListId}}&key={{key}}&token={{token}}&name=mycard5",
 					"host": [
 						"{{base_url}}"
 					],
@@ -189,7 +357,64 @@
 						},
 						{
 							"key": "name",
-							"value": "mycard1"
+							"value": "mycard5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Card exists\", function () {\r",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"myCardId\"));\r",
+							"});\r",
+							"\r",
+							"// enchaîner sur Update Card\r",
+							"postman.setNextRequest(\"Update Card\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/1/cards/{{myCardId}}?token={{token}}&key={{key}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						"{{myCardId}}"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "name",
+							"value": "mycard1",
+							"disabled": true
+						},
+						{
+							"key": "key",
+							"value": "{{key}}"
 						}
 					]
 				}
@@ -198,6 +423,32 @@
 		},
 		{
 			"name": "Delete Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 or 204\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if response body is null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._value).to.eql(null);\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(null); // Stop the collection\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -224,6 +475,123 @@
 						{
 							"key": "token",
 							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Board name is correct\", function () {\r",
+							"pm.expect(jsonData.name).to.eql('bootcamp13');\r",
+							" });\r",
+							" \r",
+							" // ➝ enchaîner sur Create List on Board\r",
+							"postman.setNextRequest(\"Create List on Board\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/1/boards/{{myboardId}}?key={{key}}&name=bootcamp13&token={{token}}&defaultLists=false",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						"{{myboardId}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "name",
+							"value": "bootcamp13"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Card name is updated\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(\"mycard6\");\r",
+							"});\r",
+							"\r",
+							"// après update, tu peux soit arrêter soit continuer\r",
+							"postman.setNextRequest(\"Delete Board\"); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/1/cards/{{myCardId}}?key={{key}}&token={{token}}&name=mycard6",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						"{{myCardId}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						},
+						{
+							"key": "name",
+							"value": "mycard6"
 						}
 					]
 				}
